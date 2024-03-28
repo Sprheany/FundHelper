@@ -9,15 +9,13 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 
 class DayFundRepo {
-    val TAG = "FundDayRepository"
 
     /**
      * 2023-08-01|1.4109|1.4609|0.0489|3.59%|-0.08%|-0.0011|1.4098|1.3620|2023-08-02|11:40:08
      */
     suspend fun getFundByCode(fundCode: String): FundWorth? {
         val result = try {
-            Net.instance.create(DayFundService::class.java)
-                .getFundValue(fundCode = fundCode)
+            Net.instance.create(DayFundService::class.java).getFundValue(fundCode = fundCode)
         } catch (e: Exception) {
             e.printStackTrace()
             return null
@@ -25,7 +23,7 @@ class DayFundRepo {
 
         val dataList = result.split("|")
 
-        if (dataList.size < 11) {
+        if (dataList.size < 11 || dataList[0].isEmpty()) {
             return null
         }
 

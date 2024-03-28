@@ -27,6 +27,10 @@ object FundUseCase {
         collectionFundRepo.removeFund(fundCode)
     }
 
+    suspend fun swipeFund(fromCode: String, toCode: String) {
+        collectionFundRepo.swipeFund(fromCode, toCode)
+    }
+
     private fun findFund(text: String) =
         if (text.isEmpty()) fundDao.getAll() else fundDao.find(text)
 
@@ -34,20 +38,22 @@ object FundUseCase {
         findFund(text)
             .combine(collectionFundRepo.collectionFundFlow) { fundList, collectionFundList ->
                 fundList.map { fund ->
-                    fund.copy(isCollection = collectionFundList.contains(fund.code))
+                    fund.copy(isCollection = collectionFundList.any { it.code == fund.code })
                 }
             }
 
     val collectionFundWorthFlow =
-        collectionFundRepo.collectionFundFlow.map { fundCodes ->
-            val fundWorthList = ArrayList<FundWorth>()
-            fundCodes.forEach { code ->
-                val fund = eastMoneyRepo.getFundByCode(code)
-                    ?: dayFundRepo.getFundByCode(code)
-                fund?.run {
-                    fundWorthList.add(this)
+        collectionFundRepo.collectionFundFlow
+            .map { fund -> fund.map { it.code } }
+            .map { fundCodes ->
+                val fundWorthList = ArrayList<FundWorth>()
+                fundCodes.forEach { code ->
+                    val fund = eastMoneyRepo.getFundByCode(code)
+                        ?: dayFundRepo.getFundByCode(code)
+                    fund?.run {
+                        fundWorthList.add(this)
+                    }
                 }
+                fundWorthList
             }
-            fundWorthList
-        }
 }

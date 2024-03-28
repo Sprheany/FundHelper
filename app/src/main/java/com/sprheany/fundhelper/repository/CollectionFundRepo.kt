@@ -1,50 +1,35 @@
 package com.sprheany.fundhelper.repository
 
-
-import android.content.Context
-import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.stringSetPreferencesKey
-import androidx.datastore.preferences.preferencesDataStore
 import com.sprheany.fundhelper.App
-import kotlinx.coroutines.flow.catch
+import com.sprheany.fundhelper.database.entities.CollectionFundEntity
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
 
 class CollectionFundRepo {
-    private val dataStore by lazy { App.instance.applicationContext.dataStore }
+    private val collectionFundDao by lazy { App.instance.db.collectionFundDao() }
 
-    val collectionFundFlow = dataStore.data
-        .catch {
-            emptySet<String>()
-        }.map { preferences ->
-            preferences[PreferencesKeys.COLLECTION_FUND] ?: emptySet()
-        }
-
-    private suspend fun saveCollectionFund(funds: List<String>) {
-        dataStore.edit { preferences ->
-            preferences[PreferencesKeys.COLLECTION_FUND] = funds.toSet()
-        }
-    }
+    val collectionFundFlow = collectionFundDao.getAll()
 
     suspend fun addFund(fundCode: String) {
-        val list = collectionFundFlow.first().toMutableList()
-        list.add(fundCode)
-        saveCollectionFund(list)
+        val fund = CollectionFundEntity(
+            code = fundCode, sort = collectionFundDao.getMaxSort() + 1
+        )
+        collectionFundDao.insertAll(fund)
     }
 
     suspend fun removeFund(fundCode: String) {
-        val list = collectionFundFlow.first().toMutableList()
-        list.remove(fundCode)
-        saveCollectionFund(list)
+        collectionFundDao.delete(CollectionFundEntity(code = fundCode))
     }
-}
 
-private const val COLLECTION_FUND_PREFERENCES_NAME = "collection_fund_preferences"
-
-private val Context.dataStore by preferencesDataStore(
-    name = COLLECTION_FUND_PREFERENCES_NAME
-)
-
-private object PreferencesKeys {
-    val COLLECTION_FUND = stringSetPreferencesKey("collection_fund")
+    suspend fun swipeFund(fromCode: String, toCode: String) {
+        collectionFundFlow.first().run {
+            val fromIndex = this.indexOfFirst { it.code == fromCode }
+            val toIndex = this.indexOfFirst { it.code == toCode }
+            val preIndex = if (fromIndex > toIndex) toIndex - 1 else toIndex
+            val nextIndex = preIndex + 1
+            val preSort = this.getOrNull(preIndex)?.sort ?: 0f
+            val nextSort = this.getOrNull(nextIndex)?.sort ?: (collectionFundDao.getMaxSort() + 1)
+            val sort = (preSort + nextSort) / 2
+            collectionFundDao.upsert(this[fromIndex].apply { this.sort = sort })
+        }
+    }
 }

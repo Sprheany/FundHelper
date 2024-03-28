@@ -4,12 +4,15 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import com.sprheany.fundhelper.database.dao.CollectionFundDao
 import com.sprheany.fundhelper.database.dao.FundDao
+import com.sprheany.fundhelper.database.entities.CollectionFundEntity
 import com.sprheany.fundhelper.database.entities.FundEntity
 
-@Database(entities = [FundEntity::class], version = 1)
+@Database(entities = [FundEntity::class, CollectionFundEntity::class], version = 2)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun fundDao(): FundDao
+    abstract fun collectionFundDao(): CollectionFundDao
 
     companion object {
         private const val DATABASE_NAME = "fund.db"

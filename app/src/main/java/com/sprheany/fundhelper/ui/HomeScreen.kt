@@ -1,8 +1,8 @@
-@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
+@file:OptIn(ExperimentalMaterial3Api::class)
 
 package com.sprheany.fundhelper.ui
 
-import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -26,10 +26,11 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -47,6 +48,10 @@ import com.sprheany.fundhelper.ui.theme.Green
 import com.sprheany.fundhelper.ui.theme.Red
 import com.sprheany.fundhelper.utils.recomposeHighlighter
 import com.sprheany.fundhelper.viewmodel.FundViewModel
+import org.burnoutcrew.reorderable.ReorderableItem
+import org.burnoutcrew.reorderable.detectReorderAfterLongPress
+import org.burnoutcrew.reorderable.rememberReorderableLazyListState
+import org.burnoutcrew.reorderable.reorderable
 
 @Composable
 fun Home(
@@ -84,10 +89,33 @@ fun HomeContent(
     modifier: Modifier = Modifier,
     viewModel: FundViewModel,
 ) {
-    val fundData by viewModel.fundWorthFlow.collectAsState()
-    LazyColumn(modifier = modifier) {
-        items(fundData, key = { it.code }) {
-            FundItem(data = it, modifier = Modifier.animateItemPlacement())
+    val data = viewModel.fundWorthFlow.collectAsState() as MutableState
+    val state = rememberReorderableLazyListState(
+        onMove = { from, to ->
+            data.value = data.value.toMutableList().apply {
+                add(to.index, removeAt(from.index))
+            }
+        },
+        onDragEnd = { fromIndex, toIndex ->
+            viewModel.onSwiped(fromIndex, toIndex)
+        }
+    )
+    LazyColumn(
+        modifier = modifier
+            .reorderable(state)
+            .detectReorderAfterLongPress(state),
+        state = state.listState,
+    ) {
+        items(data.value, { it.code }) { item ->
+            ReorderableItem(reorderableState = state, key = item.code) { isDragging ->
+                val elevation = animateDpAsState(if (isDragging) 16.dp else 0.dp, label = "")
+                FundItem(
+                    data = item,
+                    modifier = Modifier
+                        .shadow(elevation.value)
+                        .background(MaterialTheme.colorScheme.surface)
+                )
+            }
         }
     }
 }

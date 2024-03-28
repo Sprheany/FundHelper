@@ -26,4 +26,15 @@ class FundViewModel : ViewModel() {
         }
     }
 
+    fun onSwiped(fromIndex: Int, toIndex: Int) {
+        viewModelScope.launch {
+            fundWorthFlow.value.run {
+                val fromCode = get(fromIndex).code
+                val toCode = get(toIndex).code
+
+                FundUseCase.swipeFund(fromCode, toCode)
+            }
+        }
+    }
+
 }
