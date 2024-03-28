@@ -1,6 +1,7 @@
 package com.sprheany.fundhelper.database
 
 import android.content.Context
+import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
@@ -9,7 +10,13 @@ import com.sprheany.fundhelper.database.dao.FundDao
 import com.sprheany.fundhelper.database.entities.CollectionFundEntity
 import com.sprheany.fundhelper.database.entities.FundEntity
 
-@Database(entities = [FundEntity::class, CollectionFundEntity::class], version = 2)
+@Database(
+    entities = [FundEntity::class, CollectionFundEntity::class],
+    version = 2,
+    autoMigrations = [
+        AutoMigration(from = 1, to = 2)
+    ]
+)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun fundDao(): FundDao
     abstract fun collectionFundDao(): CollectionFundDao
