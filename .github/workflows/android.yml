@@ -24,7 +24,20 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew assembleRelease
 
+      - name: Conventional Changelog Action
+        id: changelog
+        uses: TriPSs/conventional-changelog-action@v5
+        with:
+          skip-version-file: "true"
+          pre-commit: bin/pre-commit.js
+          # NOTE if not provided, GITHUB_TOKEN is *not* used!
+          # https://github.com/TriPSs/conventional-changelog-action/blob/66cc91f84686286f21478f1f781ea8b34bdf0446/action.yml#L16
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Release
         uses: softprops/action-gh-release@v2
         with:
           files: app/build/outputs/apk/release/app-release.apk
+          # output options: https://github.com/TriPSs/conventional-changelog-action#outputs
+          body: ${{ steps.changelog.outputs.clean_changelog }}
+          tag_name: ${{ steps.changelog.outputs.tag }}
