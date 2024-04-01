@@ -10,10 +10,10 @@ import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
+import com.sprheany.fundhelper.data.FundUseCase
 import com.sprheany.fundhelper.glance.FundAppWidget
 import com.sprheany.fundhelper.glance.FundInfoStateDefinition
 import com.sprheany.fundhelper.models.FundState
-import com.sprheany.fundhelper.usecase.FundUseCase
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.toJavaDuration
 

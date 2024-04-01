@@ -1,8 +1,8 @@
-package com.sprheany.fundhelper.viewmodel
+package com.sprheany.fundhelper.ui.search
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.sprheany.fundhelper.usecase.FundUseCase
+import com.sprheany.fundhelper.data.FundUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch

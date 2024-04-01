@@ -1,14 +1,14 @@
-package com.sprheany.fundhelper.viewmodel
+package com.sprheany.fundhelper.ui.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.sprheany.fundhelper.data.FundUseCase
 import com.sprheany.fundhelper.models.FundWorth
-import com.sprheany.fundhelper.usecase.FundUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class FundViewModel : ViewModel() {
+class HomeViewModel : ViewModel() {
 
     private val _fundWorthFlow = MutableStateFlow<List<FundWorth>>(emptyList())
 

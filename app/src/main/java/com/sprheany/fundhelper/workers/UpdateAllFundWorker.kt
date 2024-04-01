@@ -8,7 +8,7 @@ import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
-import com.sprheany.fundhelper.usecase.FundUseCase
+import com.sprheany.fundhelper.data.FundUseCase
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.toJavaDuration
 

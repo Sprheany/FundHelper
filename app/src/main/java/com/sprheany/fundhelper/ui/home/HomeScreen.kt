@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 
-package com.sprheany.fundhelper.ui
+package com.sprheany.fundhelper.ui.home
 
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
@@ -26,8 +26,10 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -48,49 +50,42 @@ import com.sprheany.fundhelper.ui.theme.FundTheme
 import com.sprheany.fundhelper.ui.theme.Green
 import com.sprheany.fundhelper.ui.theme.Red
 import com.sprheany.fundhelper.utils.recomposeHighlighter
-import com.sprheany.fundhelper.viewmodel.FundViewModel
 import org.burnoutcrew.reorderable.ReorderableItem
 import org.burnoutcrew.reorderable.detectReorderAfterLongPress
 import org.burnoutcrew.reorderable.rememberReorderableLazyListState
 import org.burnoutcrew.reorderable.reorderable
 
 @Composable
-fun Home(
-    viewModel: FundViewModel = viewModel(),
+fun HomeScreen(
+    modifier: Modifier = Modifier,
+    viewModel: HomeViewModel = viewModel(),
     navigateToSearch: () -> Unit = {}
 ) {
+    val fundList by viewModel.fundWorthFlow.collectAsState()
     Scaffold(
         topBar = {
-            TopAppBar(modifier = Modifier.recomposeHighlighter(),
-                title = { Text(text = stringResource(id = R.string.app_name)) },
-                actions = {
-                    IconButton(onClick = {
-                        viewModel.refreshFundWorth()
-                    }) {
-                        Icon(
-                            Icons.Default.Refresh,
-                            contentDescription = stringResource(R.string.refresh),
-                        )
-                    }
-                    IconButton(onClick = navigateToSearch) {
-                        Icon(
-                            Icons.Default.Add,
-                            contentDescription = stringResource(R.string.add),
-                        )
-                    }
-                })
+            HomeTopAppBar(
+                refresh = viewModel::refreshFundWorth,
+                navigateToSearch = navigateToSearch
+            )
         },
+        modifier = modifier
     ) {
-        HomeContent(modifier = Modifier.padding(it), viewModel = viewModel)
+        HomeContent(
+            fundList = fundList,
+            modifier = Modifier.padding(it),
+            onSwiped = viewModel::onSwiped,
+        )
     }
 }
 
 @Composable
 fun HomeContent(
+    fundList: List<FundWorth>,
     modifier: Modifier = Modifier,
-    viewModel: FundViewModel,
+    onSwiped: (Int, Int) -> Unit = { _, _ -> }
 ) {
-    val data = viewModel.fundWorthFlow.collectAsState() as MutableState
+    val data = remember { mutableStateOf(fundList) }
     val state = rememberReorderableLazyListState(
         onMove = { from, to ->
             data.value = data.value.toMutableList().apply {
@@ -98,7 +93,7 @@ fun HomeContent(
             }
         },
         onDragEnd = { fromIndex, toIndex ->
-            viewModel.onSwiped(fromIndex, toIndex)
+            onSwiped(fromIndex, toIndex)
         }
     )
     LazyColumn(
@@ -172,6 +167,30 @@ fun FundItem(data: FundWorth, modifier: Modifier = Modifier) {
             color = Color.White
         )
     }
+}
+
+@Composable
+private fun HomeTopAppBar(
+    refresh: () -> Unit,
+    navigateToSearch: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    TopAppBar(modifier = modifier.recomposeHighlighter(),
+        title = { Text(text = stringResource(id = R.string.app_name)) },
+        actions = {
+            IconButton(onClick = refresh) {
+                Icon(
+                    Icons.Default.Refresh,
+                    contentDescription = stringResource(R.string.refresh),
+                )
+            }
+            IconButton(onClick = navigateToSearch) {
+                Icon(
+                    Icons.Default.Add,
+                    contentDescription = stringResource(R.string.add),
+                )
+            }
+        })
 }
 
 @Preview(showBackground = true)

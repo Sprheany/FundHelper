@@ -41,13 +41,13 @@ import androidx.glance.text.Text
 import androidx.glance.text.TextAlign
 import androidx.glance.text.TextStyle
 import androidx.glance.unit.ColorProvider
-import com.sprheany.fundhelper.MainActivity
 import com.sprheany.fundhelper.R
 import com.sprheany.fundhelper.models.FundGrowthState
 import com.sprheany.fundhelper.models.FundState
 import com.sprheany.fundhelper.models.FundWorth
 import com.sprheany.fundhelper.models.growthPercent
 import com.sprheany.fundhelper.models.state
+import com.sprheany.fundhelper.ui.MainActivity
 import com.sprheany.fundhelper.ui.theme.FundGlanceTheme
 import com.sprheany.fundhelper.ui.theme.Green
 import com.sprheany.fundhelper.ui.theme.Red

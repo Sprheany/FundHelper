@@ -1,4 +1,4 @@
-package com.sprheany.fundhelper.repository
+package com.sprheany.fundhelper.data.repository
 
 import com.sprheany.fundhelper.database.entities.FundEntity
 import com.sprheany.fundhelper.models.EastMoneyFund
@@ -46,7 +46,8 @@ class EastMoneyRepo {
     suspend fun requestAllFund(): List<FundEntity> {
         val result = Net.instance.create(EastMoneyService::class.java).getAllFund()
         val json = result.replace("var r = ", "").replace(";", "")
-        val strList = Json.decodeFromString(ListSerializer(ListSerializer(String.serializer())), json)
+        val strList =
+            Json.decodeFromString(ListSerializer(ListSerializer(String.serializer())), json)
         return strList.map {
             FundEntity(
                 code = it[0],

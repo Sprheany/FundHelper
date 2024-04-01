@@ -1,4 +1,4 @@
-package com.sprheany.fundhelper.repository
+package com.sprheany.fundhelper.data.repository
 
 import com.sprheany.fundhelper.App
 import com.sprheany.fundhelper.database.entities.CollectionFundEntity

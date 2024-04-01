@@ -1,4 +1,4 @@
-package com.sprheany.fundhelper.repository
+package com.sprheany.fundhelper.data.repository
 
 import android.text.format.DateUtils
 import com.sprheany.fundhelper.App

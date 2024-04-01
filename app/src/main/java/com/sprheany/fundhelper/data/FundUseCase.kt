@@ -1,10 +1,10 @@
-package com.sprheany.fundhelper.usecase
+package com.sprheany.fundhelper.data
 
 import com.sprheany.fundhelper.App
+import com.sprheany.fundhelper.data.repository.CollectionFundRepo
+import com.sprheany.fundhelper.data.repository.DayFundRepo
+import com.sprheany.fundhelper.data.repository.EastMoneyRepo
 import com.sprheany.fundhelper.models.FundWorth
-import com.sprheany.fundhelper.repository.CollectionFundRepo
-import com.sprheany.fundhelper.repository.DayFundRepo
-import com.sprheany.fundhelper.repository.EastMoneyRepo
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 
