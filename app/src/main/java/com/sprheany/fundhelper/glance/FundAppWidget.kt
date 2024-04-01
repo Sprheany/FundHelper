@@ -43,10 +43,11 @@ import androidx.glance.text.TextStyle
 import androidx.glance.unit.ColorProvider
 import com.sprheany.fundhelper.MainActivity
 import com.sprheany.fundhelper.R
-import com.sprheany.fundhelper.models.FUND_STATE_DOWN
-import com.sprheany.fundhelper.models.FUND_STATE_UP
+import com.sprheany.fundhelper.models.FundGrowthState
 import com.sprheany.fundhelper.models.FundState
 import com.sprheany.fundhelper.models.FundWorth
+import com.sprheany.fundhelper.models.growthPercent
+import com.sprheany.fundhelper.models.state
 import com.sprheany.fundhelper.ui.theme.FundGlanceTheme
 import com.sprheany.fundhelper.ui.theme.Green
 import com.sprheany.fundhelper.ui.theme.Red
@@ -116,17 +117,23 @@ fun TopBar() {
         Spacer(modifier = GlanceModifier.defaultWeight())
 
         Image(
-            modifier = GlanceModifier.clickable(actionRunCallback<RefreshAction>()),
+            modifier = GlanceModifier
+                .clickable(actionRunCallback<RefreshAction>())
+                .padding(4.dp)
+                .cornerRadius(16.dp),
             provider = ImageProvider(R.drawable.baseline_refresh_24),
             contentDescription = null,
-            colorFilter = ColorFilter.tint(GlanceTheme.colors.onBackground)
+            colorFilter = ColorFilter.tint(GlanceTheme.colors.onSurfaceVariant)
         )
         Spacer(modifier = GlanceModifier.width(16.dp))
         Image(
-            modifier = GlanceModifier.clickable(actionStartActivity<MainActivity>()),
+            modifier = GlanceModifier
+                .clickable(actionStartActivity<MainActivity>())
+                .padding(4.dp)
+                .cornerRadius(16.dp),
             provider = ImageProvider(R.drawable.baseline_more_vert_24),
             contentDescription = null,
-            colorFilter = ColorFilter.tint(GlanceTheme.colors.onBackground)
+            colorFilter = ColorFilter.tint(GlanceTheme.colors.onSurfaceVariant)
         )
     }
 }
@@ -207,8 +214,8 @@ fun FundItem(data: FundWorth) {
             modifier = GlanceModifier
                 .background(
                     color = when (data.state) {
-                        FUND_STATE_UP -> Red
-                        FUND_STATE_DOWN -> Green
+                        FundGrowthState.Up -> Red
+                        FundGrowthState.Down -> Green
                         else -> Color.Gray
                     }
                 )

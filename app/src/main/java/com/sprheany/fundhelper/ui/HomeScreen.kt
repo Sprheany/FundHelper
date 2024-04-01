@@ -40,9 +40,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sprheany.fundhelper.R
-import com.sprheany.fundhelper.models.FUND_STATE_DOWN
-import com.sprheany.fundhelper.models.FUND_STATE_UP
+import com.sprheany.fundhelper.models.FundGrowthState
 import com.sprheany.fundhelper.models.FundWorth
+import com.sprheany.fundhelper.models.growthPercent
+import com.sprheany.fundhelper.models.state
 import com.sprheany.fundhelper.ui.theme.FundTheme
 import com.sprheany.fundhelper.ui.theme.Green
 import com.sprheany.fundhelper.ui.theme.Red
@@ -158,8 +159,8 @@ fun FundItem(data: FundWorth, modifier: Modifier = Modifier) {
                 .defaultMinSize(minWidth = 60.dp)
                 .background(
                     color = when (data.state) {
-                        FUND_STATE_UP -> Red
-                        FUND_STATE_DOWN -> Green
+                        FundGrowthState.Up -> Red
+                        FundGrowthState.Down -> Green
                         else -> Color.Gray
                     },
                     shape = RoundedCornerShape(4.dp),

@@ -19,13 +19,18 @@ data class FundWorth(
     val exceptGrowthPercent: String,
     val exceptWorthDate: String,
 
-    val state: Int = if (exceptGrowthWorth.toDoubleOrNull() == null) FUND_STATE_NONE else
-        if (exceptGrowthWorth.toDouble() >= 0) FUND_STATE_UP else FUND_STATE_DOWN,
+    )
 
-    val growthPercent: String = if (state == FUND_STATE_UP)
-        "+${exceptGrowthPercent}" else exceptGrowthPercent,
-)
+enum class FundGrowthState {
+    None,
+    Up,
+    Down
+}
 
-const val FUND_STATE_NONE = -1
-const val FUND_STATE_UP = 1
-const val FUND_STATE_DOWN = 0
+val FundWorth.state: FundGrowthState
+    get() = if (exceptGrowthWorth.toDoubleOrNull() == null) FundGrowthState.None else
+        if (exceptGrowthWorth.toDouble() >= 0) FundGrowthState.Up else FundGrowthState.Down
+
+val FundWorth.growthPercent: String
+    get() = if (state == FundGrowthState.Up) "+${exceptGrowthPercent}" else exceptGrowthPercent
+
