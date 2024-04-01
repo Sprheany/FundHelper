@@ -1,5 +1,6 @@
 package com.sprheany.fundhelper.models
 
+import com.sprheany.fundhelper.database.entities.FundEntity
 import kotlinx.serialization.Serializable
 
 /**
@@ -17,9 +18,19 @@ data class FundWorth(
     val exceptWorth: String,
     val exceptGrowthWorth: String,
     val exceptGrowthPercent: String,
-    val exceptWorthDate: String,
-
+    val exceptWorthDate: String
+) {
+    constructor(fundEntity: FundEntity) : this(
+        code = fundEntity.code,
+        name = fundEntity.name,
+        netWorth = "--",
+        worthDate = "",
+        exceptWorth = "--",
+        exceptGrowthWorth = "--",
+        exceptGrowthPercent = "--",
+        exceptWorthDate = "",
     )
+}
 
 enum class FundGrowthState {
     None,

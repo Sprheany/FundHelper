@@ -29,18 +29,26 @@ class DayFundRepo {
 
         val fund = App.instance.db.fundDao().get(fundCode)
 
-        var exceptWorth = dataList[7]
-        var exceptGrowthWorth = dataList[6]
-        var exceptGrowthPercent = dataList[5]
+        var exceptWorth = "--"
+        var exceptGrowthWorth = "--"
+        var exceptGrowthPercent = "--"
         val exceptWorthDate = dataList[9] + " " + dataList[10]
 
-        val exceptDate = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).parse(exceptWorthDate)
-        if (!DateUtils.isToday(exceptDate?.time ?: 0)) {
-            exceptWorth = "--"
-            exceptGrowthWorth = "--"
-            exceptGrowthPercent = "--"
+        try {
+            val formatter = when (dataList[10].split(":").size) {
+                3 -> "yyyy-MM-dd HH:mm:ss"
+                2 -> "yyyy-MM-dd HH:mm"
+                else -> "yyyy-MM-dd"
+            }
+            val exceptDate = SimpleDateFormat(formatter, Locale.getDefault()).parse(exceptWorthDate)
+            if (DateUtils.isToday(exceptDate?.time ?: 0)) {
+                exceptWorth = dataList[7]
+                exceptGrowthWorth = dataList[6]
+                exceptGrowthPercent = dataList[5]
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
-
         return FundWorth(
             code = fundCode,
             name = fund?.name ?: "",

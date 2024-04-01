@@ -50,6 +50,7 @@ object FundUseCase {
                 fundCodes.forEach { code ->
                     val fund = eastMoneyRepo.getFundByCode(code)
                         ?: dayFundRepo.getFundByCode(code)
+                        ?: fundDao.get(code)?.run { FundWorth(this) }
                     fund?.run {
                         fundWorthList.add(this)
                     }
