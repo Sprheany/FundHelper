@@ -5,10 +5,12 @@ package com.sprheany.fundhelper.ui.home
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -18,6 +20,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -42,7 +45,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sprheany.fundhelper.R
+import com.sprheany.fundhelper.data.FundUseCase
 import com.sprheany.fundhelper.models.FundGrowthState
+import com.sprheany.fundhelper.models.FundState
 import com.sprheany.fundhelper.models.FundWorth
 import com.sprheany.fundhelper.models.growthPercent
 import com.sprheany.fundhelper.models.state
@@ -61,7 +66,7 @@ fun HomeScreen(
     viewModel: HomeViewModel = viewModel(),
     navigateToSearch: () -> Unit = {}
 ) {
-    val fundList by viewModel.fundWorthFlow.collectAsState()
+    val fundState by FundUseCase.fundState.collectAsState()
     Scaffold(
         topBar = {
             HomeTopAppBar(
@@ -71,11 +76,45 @@ fun HomeScreen(
         },
         modifier = modifier
     ) {
-        HomeContent(
-            fundList = fundList,
+        FundInfoView(
+            fundState = fundState,
             modifier = Modifier.padding(it),
-            onSwiped = viewModel::onSwiped,
+            onSwiped = viewModel::onSwiped
         )
+    }
+}
+
+@Composable
+fun FundInfoView(
+    fundState: FundState,
+    modifier: Modifier = Modifier,
+    onSwiped: (String, String) -> Unit = { _, _ -> }
+) {
+    when (fundState) {
+        is FundState.Loading -> {
+            Box(
+                modifier = modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
+        }
+
+        is FundState.Success -> {
+            HomeContent(
+                fundList = fundState.fundWorth,
+                modifier = modifier,
+                onSwiped = onSwiped,
+            )
+        }
+
+        is FundState.Error -> {
+            Box(modifier = modifier, contentAlignment = Alignment.Center) {
+                Text(
+                    text = fundState.message,
+                )
+            }
+        }
     }
 }
 
@@ -83,7 +122,7 @@ fun HomeScreen(
 fun HomeContent(
     fundList: List<FundWorth>,
     modifier: Modifier = Modifier,
-    onSwiped: (Int, Int) -> Unit = { _, _ -> }
+    onSwiped: (String, String) -> Unit = { _, _ -> }
 ) {
     val data = remember { mutableStateOf(fundList) }
     val state = rememberReorderableLazyListState(
@@ -93,7 +132,9 @@ fun HomeContent(
             }
         },
         onDragEnd = { fromIndex, toIndex ->
-            onSwiped(fromIndex, toIndex)
+            val fromCode = data.value[fromIndex].code
+            val toCode = data.value[toIndex].code
+            onSwiped(fromCode, toCode)
         }
     )
     LazyColumn(

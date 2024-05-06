@@ -4,7 +4,9 @@ import com.sprheany.fundhelper.App
 import com.sprheany.fundhelper.data.repository.CollectionFundRepo
 import com.sprheany.fundhelper.data.repository.DayFundRepo
 import com.sprheany.fundhelper.data.repository.EastMoneyRepo
+import com.sprheany.fundhelper.models.FundState
 import com.sprheany.fundhelper.models.FundWorth
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 
@@ -42,7 +44,7 @@ object FundUseCase {
                 }
             }
 
-    val collectionFundWorthFlow =
+    private val collectionFundWorthFlow =
         collectionFundRepo.collectionFundFlow
             .map { fund -> fund.map { it.code } }
             .map { fundCodes ->
@@ -57,4 +59,14 @@ object FundUseCase {
                 }
                 fundWorthList
             }
+
+    private val _fundState = MutableStateFlow<FundState>(FundState.Loading)
+    val fundState get() = _fundState
+    suspend fun refreshFundWorth() {
+        fundState.value = FundState.Loading
+
+        collectionFundWorthFlow.collect {
+            _fundState.value = FundState.Success(it)
+        }
+    }
 }
